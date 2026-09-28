@@ -25,7 +25,24 @@ const modules = [
   projects,
 ];
 
-export const allToolDefinitions: ToolDefinition[] = modules.flatMap(m => m.toolDefinitions);
+const enabledToolNames = new Set([
+  'create_contact',
+  'update_contact',
+  'get_contact',
+  'search_contacts',
+  'list_segments',
+  'create_segment',
+  'get_segment_contacts',
+  'list_contact_fields',
+  'create_contact_field',
+  'list_tags',
+  'create_tag',
+  'add_contact_tags',
+]);
+
+export const allToolDefinitions: ToolDefinition[] = modules
+  .flatMap(m => m.toolDefinitions)
+  .filter(tool => enabledToolNames.has(tool.name));
 
 const allHandlers: Record<string, (client: MauticApiClient, args: any) => Promise<ToolResult>> = {};
 for (const mod of modules) {
@@ -37,6 +54,13 @@ export async function dispatchTool(
   client: MauticApiClient,
   args: any,
 ): Promise<ToolResult> {
+  if (!enabledToolNames.has(toolName)) {
+    return {
+      content: [{ type: 'text', text: `Tool not enabled: ${toolName}` }],
+      isError: true,
+    };
+  }
+
   const handler = allHandlers[toolName];
   if (!handler) {
     return {

@@ -289,7 +289,9 @@ The server includes comprehensive error handling:
 
 ### Codex setup
 
-Use a dedicated Mautic OAuth2 user with only the permissions this integration needs. This Codex configuration exposes contact, segment, field, and tag tools; every call prompts for approval. It omits email sending, campaign execution, contact deletion, webhooks, uploads, and project deletion.
+This fork exposes only contact, segment, custom-field, and tag tools; it also rejects dispatch to every other tool. Codex prompts before each call. Email sending, campaign execution/enrollment, contact deletion, webhooks, uploads, and project operations stay disabled.
+
+The current client uses Mautic's `client_credentials` grant. Mautic documents this as application-level access rather than a user session and does not enforce OAuth scopes, so the tool allowlist and Codex approval prompts are the effective restrictions for this local integration. Keep its client secret private and use a separate OAuth client only for this MCP.
 
 Set the four `MAUTIC_*` variables in the environment that launches Codex, then add this to `~/.codex/config.toml` (replace the path with the local checkout):
 
@@ -299,7 +301,7 @@ command = "node"
 args = ["/path/to/mantic-MCP/build/index.js"]
 env_vars = ["MAUTIC_BASE_URL", "MAUTIC_CLIENT_ID", "MAUTIC_CLIENT_SECRET", "MAUTIC_TOKEN_ENDPOINT"]
 enabled_tools = [
-  "create_contact", "update_contact", "get_contact", "search_contacts", "add_contact_to_segment",
+  "create_contact", "update_contact", "get_contact", "search_contacts",
   "list_segments", "create_segment", "get_segment_contacts",
   "list_contact_fields", "create_contact_field",
   "list_tags", "create_tag", "add_contact_tags"
