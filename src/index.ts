@@ -63,7 +63,7 @@ class MauticServer {
 
     this.setupToolHandlers();
 
-    this.server.onerror = (error) => console.error('[MCP Error]', error);
+    this.server.onerror = (error) => console.error('[MCP Error]', error instanceof Error ? error.message : 'Unknown MCP error');
     process.on('SIGINT', async () => {
       await this.server.close();
       process.exit(0);
@@ -106,4 +106,4 @@ class MauticServer {
 }
 
 const server = new MauticServer();
-server.run().catch(console.error);
+server.run().catch(() => console.error('Mautic MCP server failed to start'));

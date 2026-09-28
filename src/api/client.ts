@@ -66,7 +66,7 @@ export class MauticApiClient {
               return instance.request(originalRequest);
             }
           } catch (refreshError) {
-            console.error('Token refresh failed:', refreshError);
+            console.error('Token refresh failed');
           }
         }
         return Promise.reject(error);
@@ -103,7 +103,7 @@ export class MauticApiClient {
         token_type: response.data.token_type || 'Bearer',
       };
     } catch (error) {
-      console.error('Failed to get access token:', error);
+      console.error('Failed to get access token');
       throw new McpError(ErrorCode.InternalError, 'Failed to authenticate with Mautic API');
     }
   }
@@ -133,7 +133,7 @@ export class MauticApiClient {
         token_type: response.data.token_type || 'Bearer',
       };
     } catch (error) {
-      console.error('Failed to refresh token:', error);
+      console.error('Failed to refresh token');
       await this.getAccessToken();
     }
   }

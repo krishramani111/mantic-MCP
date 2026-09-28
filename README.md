@@ -153,7 +153,7 @@ SMS API classes have been removed in Mautic 7. The `list_sms` and `create_sms` t
 ## Installation
 
 ### Prerequisites
-- Node.js (v16 or higher)
+- Node.js (v18 or higher)
 - npm or yarn
 - Access to a Mautic 7 instance with API credentials
 
@@ -283,8 +283,31 @@ The server includes comprehensive error handling:
 
 - All credentials are stored as environment variables
 - OAuth2 tokens are automatically refreshed
-- No sensitive data is logged or exposed
+- Authentication failures do not log Axios request objects or credentials
+- Contact and campaign data returned by tools is sent to the connected MCP client; treat it as sensitive
 - Secure HTTPS communication with Mautic API
+
+### Codex setup
+
+Use a dedicated Mautic OAuth2 user with only the permissions this integration needs. This Codex configuration exposes contact, segment, field, and tag tools; every call prompts for approval. It omits email sending, campaign execution, contact deletion, webhooks, uploads, and project deletion.
+
+Set the four `MAUTIC_*` variables in the environment that launches Codex, then add this to `~/.codex/config.toml` (replace the path with the local checkout):
+
+```toml
+[mcp_servers.mautic]
+command = "node"
+args = ["/path/to/mantic-MCP/build/index.js"]
+env_vars = ["MAUTIC_BASE_URL", "MAUTIC_CLIENT_ID", "MAUTIC_CLIENT_SECRET", "MAUTIC_TOKEN_ENDPOINT"]
+enabled_tools = [
+  "create_contact", "update_contact", "get_contact", "search_contacts", "add_contact_to_segment",
+  "list_segments", "create_segment", "get_segment_contacts",
+  "list_contact_fields", "create_contact_field",
+  "list_tags", "create_tag", "add_contact_tags"
+]
+default_tools_approval_mode = "prompt"
+```
+
+Do not put the client secret in this repository or commit a local `.env` file.
 
 ## Development
 
