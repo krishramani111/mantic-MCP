@@ -293,13 +293,11 @@ This fork exposes only contact, segment, custom-field, and tag tools; it also re
 
 The current client uses Mautic's `client_credentials` grant. Mautic documents this as application-level access rather than a user session and does not enforce OAuth scopes, so the tool allowlist and Codex approval prompts are the effective restrictions for this local integration. Keep its client secret private and use a separate OAuth client only for this MCP.
 
-Set the four `MAUTIC_*` variables in the environment that launches Codex, then add this to `~/.codex/config.toml` (replace the path with the local checkout):
+Copy `.env.example` to `.env`, fill in the four Mautic values, and restrict that local file to your account (`chmod 600 .env`). Then add this to `~/.codex/config.toml`:
 
 ```toml
 [mcp_servers.mautic]
-command = "node"
-args = ["/path/to/mantic-MCP/build/index.js"]
-env_vars = ["MAUTIC_BASE_URL", "MAUTIC_CLIENT_ID", "MAUTIC_CLIENT_SECRET", "MAUTIC_TOKEN_ENDPOINT"]
+command = "/Users/krishramani/Development/Elvee/mantic-MCP/scripts/launch-mcp.sh"
 enabled_tools = [
   "create_contact", "update_contact", "get_contact", "search_contacts",
   "list_segments", "create_segment", "get_segment_contacts",
